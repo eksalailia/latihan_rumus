@@ -166,7 +166,6 @@
 <body>
 <div class="container">
 
-  <!-- SCREEN: START -->
   <div id="screen-start" class="screen active">
     <h1>📝 Latihan IF, COUNTIF, SUMIF</h1>
     <p class="subtitle">Kelas 7 SMP — Tulis Rumus IF, COUNTIF, SUMIF (2 kondisi)</p>
@@ -198,7 +197,6 @@
     <button type="button" onclick="startQuiz()">🚀 Mulai Latihan</button>
   </div>
 
-  <!-- SCREEN: QUIZ -->
   <div id="screen-quiz" class="screen">
     <div class="identitas-bar">
       <span>👤 <span id="info-nama"></span></span>
@@ -224,7 +222,6 @@
     </div>
   </div>
 
-  <!-- SCREEN: RESULT -->
   <div id="screen-result" class="screen">
     <h1>🎉 Hasil Latihan</h1>
     <div class="result-box">
@@ -244,7 +241,6 @@
 <form id="google-form" target="hidden_iframe" method="POST" style="display:none;"></form>
 
 <script>
-// ========== BANK SOAL (20 SOAL IF, COUNTIF, SUMIF — 2 KONDISI) ==========
 const BANK_SOAL = [
   { q: "Tuliskan rumus IF: jika nilai di A1 lebih besar dari 75, tampilkan \"Lulus\", jika tidak tampilkan \"Remedial\".", a: ["=if(a1>75,\"lulus\",\"remedial\")", "=if(a1>75,'lulus','remedial')"], hint: "Format: =IF(kondisi, nilai_jika_benar, nilai_jika_salah)", e: "Rumus yang benar: <b>=IF(A1>75,\"Lulus\",\"Remedial\")</b>" },
   { q: "Tuliskan rumus IF: jika nilai di B1 lebih besar atau sama dengan 60, tampilkan \"Lulus\", jika tidak \"Tidak Lulus\".", a: ["=if(b1>=60,\"lulus\",\"tidak lulus\")", "=if(b1>=60,'lulus','tidak lulus')"], hint: "Gunakan operator >=", e: "Rumus yang benar: <b>=IF(B1>=60,\"Lulus\",\"Tidak Lulus\")</b>" },
@@ -265,10 +261,9 @@ const BANK_SOAL = [
   { q: "Tuliskan rumus SUMIF: jumlahkan nilai di B1:B10 HANYA jika nilai di A1:A10 lebih dari atau sama dengan 70.", a: ["=sumif(a1:a10,\">=70\",b1:b10)"], hint: "SUMIF dengan kriteria \">=70\"", e: "Rumus yang benar: <b>=SUMIF(A1:A10,\">=70\",B1:B10)</b>" },
   { q: "Tuliskan rumus SUMIF: jumlahkan nilai di D1:D20 HANYA jika nilai di C1:C20 sama dengan \"Perempuan\".", a: ["=sumif(c1:c20,\"perempuan\",d1:d20)", "=sumif(c1:c20,'perempuan',d1:d20)"], hint: "SUMIF dengan kriteria teks", e: "Rumus yang benar: <b>=SUMIF(C1:C20,\"Perempuan\",D1:D20)</b>" },
   { q: "Tuliskan rumus SUMIF: jumlahkan nilai di B1:B15 HANYA jika nilai di A1:A15 KURANG DARI 60.", a: ["=sumif(a1:a15,\"<60\",b1:b15)"], hint: "SUMIF dengan kriteria \"<60\"", e: "Rumus yang benar: <b>=SUMIF(A1:A15,\"<60\",B1:B15)</b>" },
-  { q: "Tuliskan rumus SUMIF: jumlahkan nilai di E1:E30 HANYA jika nilai di D1:D30 sama dengan 100.", a: ["=sumif(d1:d30,100,e1:e30)", "=sumif(d1:d30,\"100\",e1:e30)"], hint: "SUMIF dengan kriteria angka", e: "Rumus yang benar: <b>=SUMIF(D1:D30,100,E1:E30)</b>" }
+  { q: "Tuliskan rumus SUMIF: jumlahkan nilai di E1:E30 HANYA jika nilai di A1:A30 sama dengan 100.", a: ["=sumif(d1:d30,100,e1:e30)", "=sumif(d1:d30,\"100\",e1:e30)"], hint: "SUMIF dengan kriteria angka", e: "Rumus yang benar: <b>=SUMIF(D1:D30,100,E1:E30)</b>" }
 ];
 
-// ========== VARIABEL ==========
 let soalAcak = [];
 let jawabanUser = [];
 let currentIndex = 0;
@@ -277,10 +272,9 @@ let absenSiswa = "";
 let kelasSiswa = "";
 let sudahKirim = false;
 
-// ⚠️ GANTI DENGAN URL /exec HASIL DEPLOY APPS SCRIPT BARU
+// ⚠️ GANTI DENGAN URL /exec DARI APPS SCRIPT ANDA
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbziX39MW-5bH9K9ro1U36alertVK0d2xALiVYeeiKPo2AAdLix49pees7RNl8uyvl6t/exec";
 
-// ========== NORMALISASI ==========
 function normalisasi(str) {
   if (!str) return "";
   return str.toLowerCase().replace(/\s+/g, "").replace(/;/g, ",")
@@ -293,11 +287,14 @@ function cekJawaban(userInput, jawabanBenar) {
   return jawabanBenar.some(jb => normalisasi(jb) === userNorm);
 }
 
-// ========== FUNGSI UTAMA ==========
 function startQuiz() {
-  namaSiswa = document.getElementById('input-name').value.trim();
-  absenSiswa = document.getElementById('input-absen').value.trim();
-  kelasSiswa = document.getElementById('input-class').value.trim();
+  const elNama = document.getElementById('input-name');
+  const elAbsen = document.getElementById('input-absen');
+  const elKelas = document.getElementById('input-class');
+
+  namaSiswa = elNama.value.trim();
+  absenSiswa = elAbsen.value.trim();
+  kelasSiswa = elKelas.value.trim();
 
   if (!namaSiswa || !kelasSiswa || !absenSiswa) {
     alert("Isi nama, absen, dan kelas dulu ya!");
@@ -428,7 +425,6 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-// ========== KIRIM KE GOOGLE SHEETS (FINAL) ==========
 function kirimKeSheet(benar, nilai) {
   const statusEl = document.getElementById('send-status');
   statusEl.style.display = 'block';
@@ -440,16 +436,16 @@ function kirimKeSheet(benar, nilai) {
   }
   sudahKirim = true;
 
-  // Validasi URL — TANPA membandingkan dengan URL yang sama
+  // ✅ Cek hanya placeholder — TIDAK membandingkan dengan URL asli
   if (!WEB_APP_URL || WEB_APP_URL.trim() === "" || WEB_APP_URL === "https://script.google.com/macros/s/AKfycbziX39MW-5bH9K9ro1U36alertVK0d2xALiVYeeiKPo2AAdLix49pees7RNl8uyvl6t/exec") {
     statusEl.className = 'send-status error';
-    statusEl.textContent = '⚠️ URL Apps Script belum diisi. Ganti "https://script.google.com/macros/s/AKfycbziX39MW-5bH9K9ro1U36alertVK0d2xALiVYeeiKPo2AAdLix49pees7RNl8uyvl6t/exec" dengan URL /exec Anda.';
+    statusEl.textContent = '⚠️ URL Apps Script belum diisi. Ganti PASTE_URL_EXEC_DI_SINI dengan URL /exec Anda.';
     return;
   }
 
   if (!WEB_APP_URL.startsWith("https://script.google.com/macros/s/") || !WEB_APP_URL.endsWith("/exec")) {
     statusEl.className = 'send-status error';
-    statusEl.textContent = '⚠️ URL tidak valid. Harus diawali https://script.google.com/macros/s/ dan diakhiri /exec.';
+    statusEl.textContent = '⚠️ URL tidak valid.';
     return;
   }
 
