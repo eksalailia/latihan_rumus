@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan IF, COUNTIF, SUMIF - Kelas 7 SMP</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+  }
+  .container {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 800px;
+    width: 100%;
+    padding: 30px;
+    position: relative;
+  }
+  h1 { color: #11998e; text-align: center; margin-bottom: 10px; font-size: 24px; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 14px; }
+
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeIn 0.4s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
+
+  .input-group { margin-bottom: 15px; }
+  .input-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+  .input-group input {
+    width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 10px; font-size: 15px;
+  }
+  .input-group input:focus { outline: none; border-color: #11998e; }
+
+  button {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: #fff; border: none; padding: 14px 24px; border-radius: 10px;
+    font-size: 16px; font-weight: 600; cursor: pointer; width: 100%;
+    transition: transform 0.2s;
+  }
+  button:hover { transform: translateY(-2px); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .header-info {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding: 10px 15px;
+    background: #e8f8f0; border-radius: 10px; font-size: 14px;
+  }
+  .timer { display: none; }
+
+  .progress-bar {
+    height: 8px; background: #eee; border-radius: 5px; margin-bottom: 20px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, #11998e, #38ef7d);
+    width: 0%; transition: width 0.3s;
+  }
+
+  .question-box {
+    background: #f0fdf6; border-left: 5px solid #11998e;
+    padding: 20px; border-radius: 10px; margin-bottom: 20px;
+    font-size: 16px; line-height: 1.6;
+  }
+  .question-num { color: #11998e; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+  .hint { font-size: 13px; color: #888; margin-top: 8px; font-style: italic; }
+
+  .answer-box { display: flex; flex-direction: column; gap: 12px; }
+  .answer-box label { font-weight: 600; color: #333; font-size: 14px; }
+  .answer-input {
+    width: 100%; padding: 14px 18px; border: 2px solid #11998e;
+    border-radius: 10px; font-size: 16px;
+    font-family: 'Courier New', monospace;
+    background: #f0fdf6;
+  }
+  .answer-input:focus {
+    outline: none; border-color: #11998e;
+    box-shadow: 0 0 0 3px rgba(17,153,142,0.2);
+  }
+  .answer-input::placeholder { font-family: 'Segoe UI', sans-serif; color: #aaa; }
+  .btn-submit { background: linear-gradient(135deg, #11998e, #38ef7d); font-size: 15px; padding: 12px; }
+  .btn-skip { background: #fff; color: #666; border: 2px solid #ddd; font-size: 14px; padding: 10px; }
+  .btn-skip:hover { background: #f0fdf6; color: #333; }
+
+  .result-box { text-align: center; padding: 20px; }
+  .score-circle {
+    width: 150px; height: 150px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 20px auto; font-size: 36px; font-weight: 700; color: #fff;
+  }
+  .score-excellent { background: linear-gradient(135deg, #11998e, #38ef7d); }
+  .score-good { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .score-fair { background: linear-gradient(135deg, #f6d365, #fda085); }
+  .score-poor { background: linear-gradient(135deg, #eb3349, #f45c43); }
+
+  .feedback {
+    font-size: 16px; line-height: 1.6; margin: 15px 0;
+    padding: 15px; border-radius: 10px; background: #f0fdf6;
+  }
+
+  .review-item {
+    background: #f0fdf6; border-radius: 12px; padding: 15px;
+    margin-bottom: 14px; border-left: 5px solid #ddd;
+    position: relative;
+  }
+  .review-item.correct { border-left-color: #38ef7d; background: #f0fdf6; }
+  .review-item.wrong { border-left-color: #f45c43; background: #fef6f6; }
+
+  .review-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 700; margin-bottom: 8px;
+    color: #fff;
+  }
+  .review-badge.correct { background: #11998e; }
+  .review-badge.wrong { background: #e74c3c; }
+
+  .review-q { font-weight: 600; margin-bottom: 10px; font-size: 14px; line-height: 1.5; }
+  .review-row { font-size: 14px; margin: 6px 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+  .review-label { font-weight: 600; color: #555; min-width: 110px; }
+  .review-answer {
+    padding: 3px 10px; border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+  }
+  .review-answer.correct-ans { background: #d4f4e4; color: #11998e; }
+  .review-answer.wrong-ans { background: #fde0e0; color: #e74c3c; text-decoration: line-through; }
+  .review-answer.empty-ans { background: #eee; color: #888; font-style: italic; }
+
+  .review-explanation {
+    margin-top: 10px; padding: 10px; background: #fff8e1;
+    border-radius: 8px; font-size: 13px; line-height: 1.5; color: #555;
+    border-left: 3px solid #f39c12;
+  }
+  .scroll-area { max-height: 500px; overflow-y: auto; padding-right: 5px; }
+  .scroll-area::-webkit-scrollbar { width: 6px; }
+  .scroll-area::-webkit-scrollbar-thumb { background: #11998e; border-radius: 3px; }
+
+  .rules { background: #fff8e1; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
+  .rules ul { margin-left: 20px; margin-top: 8px; }
+  .rules code { background: #fff; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #11998e; }
+
+  .identitas-bar {
+    background: #e8f8f0; padding: 8px 12px; border-radius: 8px;
+    font-size: 13px; color: #11998e; margin-bottom: 12px;
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .identitas-bar span { background: #fff; padding: 3px 10px; border-radius: 6px; font-weight: 600; }
+
+  .send-status {
+    margin-top: 15px; padding: 10px; border-radius: 8px;
+    font-size: 13px; text-align: center;
+  }
+  .send-status.sending { background: #fff8e1; color: #f39c12; }
+  .send-status.success { background: #e8f8f0; color: #11998e; }
+  .send-status.error { background: #fde8e8; color: #e74c3c; }
+
+  .summary-box {
+    display: flex; gap: 10px; justify-content: center; margin: 15px 0;
+    flex-wrap: wrap;
+  }
+  .summary-item {
+    background: #f0fdf6; padding: 10px 20px; border-radius: 10px;
+    font-size: 14px; text-align: center;
+  }
+  .summary-item strong { display: block; font-size: 20px; color: #11998e; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- SCREEN: START -->
+  <div id="screen-start" class="screen active">
+    <h1>📝 Latihan IF, COUNTIF, SUMIF</h1>
+    <p class="subtitle">Kelas 7 SMP — Tulis Rumus IF, COUNTIF, SUMIF (2 kondisi)</p>
+    <div class="rules">
+      <strong>📌 Petunjuk Latihan:</strong>
+      <ul>
+        <li>Jumlah soal: <b>20 soal</b> (acak)</li>
+        <li>Tanpa batas waktu</li>
+        <li>Jawab dengan <b>menulis rumus</b> di kotak jawaban</li>
+        <li>Contoh: <code>=IF(A1>75,"Lulus","Remedial")</code></li>
+        <li>Tidak bisa kembali ke soal sebelumnya</li>
+        <li>Di akhir, ada <b>nilai + pembahasan</b> dengan tanda ✅ benar / ❌ salah</li>
+      </ul>
+    </div>
+
+    <div class="input-group">
+      <label>Nama Lengkap</label>
+      <input type="text" id="input-name" placeholder="Masukkan nama kamu">
+    </div>
+    <div class="input-group">
+      <label>Absen</label>
+      <input type="text" id="input-absen" placeholder="Contoh: 15">
+    </div>
+    <div class="input-group">
+      <label>Kelas</label>
+      <input type="text" id="input-class" placeholder="Contoh: 7A">
+    </div>
+
+    <button type="button" onclick="startQuiz()">🚀 Mulai Latihan</button>
+  </div>
+
+  <!-- SCREEN: QUIZ -->
+  <div id="screen-quiz" class="screen">
+    <div class="identitas-bar">
+      <span>👤 <span id="info-nama"></span></span>
+      <span>🔢 Absen <span id="info-absen"></span></span>
+      <span>🏫 <span id="info-kelas"></span></span>
+    </div>
+    <div class="header-info">
+      <div>Soal <b id="q-current">1</b> / 20</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="question-box">
+      <div class="question-num" id="q-num">Soal 1</div>
+      <div id="q-text"></div>
+      <div class="hint" id="q-hint"></div>
+    </div>
+    <div class="answer-box">
+      <label>✍️ Tulis rumusmu di sini:</label>
+      <input type="text" id="answer-input" class="answer-input"
+             placeholder="Contoh: =IF(A1>75,&quot;Lulus&quot;,&quot;Remedial&quot;)"
+             autocomplete="off" spellcheck="false">
+      <button type="button" class="btn-submit" onclick="submitJawaban()">✅ Jawab & Lanjut</button>
+      <button type="button" class="btn-skip" onclick="lewatiSoal()">⏭️ Lewati Soal</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: RESULT -->
+  <div id="screen-result" class="screen">
+    <h1>🎉 Hasil Latihan</h1>
+    <div class="result-box">
+      <div class="score-circle" id="score-circle">0</div>
+      <p style="color:#666;font-size:14px;">Nilai Kamu</p>
+      <div class="summary-box" id="summary-box"></div>
+      <div class="feedback" id="feedback-text"></div>
+      <div class="send-status" id="send-status" style="display:none;"></div>
+    </div>
+    <h3 style="margin:20px 0 10px;color:#11998e;">📝 Pembahasan Soal (✅ Benar / ❌ Salah)</h3>
+    <div class="scroll-area" id="review-area"></div>
+  </div>
+
+</div>
+
+<!-- Iframe & Form hidden untuk kirim ke Apps Script -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+<form id="google-form" target="hidden_iframe" method="POST" style="display:none;"></form>
+
+<script>
+// ========== BANK SOAL (20 SOAL IF, COUNTIF, SUMIF — 2 KONDISI) ==========
+const BANK_SOAL = [
+  // ===== IF (2 kondisi) =====
+  { q: "Tuliskan rumus IF: jika nilai di A1 lebih besar dari 75, tampilkan \"Lulus\", jika tidak tampilkan \"Remedial\".", a: ["=if(a1>75,\"lulus\",\"remedial\")", "=if(a1>75,'lulus','remedial')"], hint: "Format: =IF(kondisi, nilai_jika_benar, nilai_jika_salah)", e: "Rumus yang benar: <b>=IF(A1>75,\"Lulus\",\"Remedial\")</b>" },
+  { q: "Tuliskan rumus IF: jika nilai di B1 lebih besar atau sama dengan 60, tampilkan \"Lulus\", jika tidak \"Tidak Lulus\".", a: ["=if(b1>=60,\"lulus\",\"tidak lulus\")", "=if(b1>=60,'lulus','tidak lulus')"], hint: "Gunakan operator >=", e: "Rumus yang benar: <b>=IF(B1>=60,\"Lulus\",\"Tidak Lulus\")</b>" },
+  { q: "Tuliskan rumus IF: jika nilai di C1 lebih kecil dari 70, tampilkan \"Remedial\", jika tidak tampilkan \"Lulus\".", a: ["=if(c1<70,\"remedial\",\"lulus\")", "=if(c1<70,'remedial','lulus')"], hint: "Gunakan operator <", e: "Rumus yang benar: <b>=IF(C1<70,\"Remedial\",\"Lulus\")</b>" },
+  { q: "Tuliskan rumus IF: jika nilai di D1 sama dengan \"Laki-laki\", tampilkan \"Putra\", jika tidak tampilkan \"Putri\".", a: ["=if(d1=\"laki-laki\",\"putra\",\"putri\")", "=if(d1='laki-laki','putra','putri')"], hint: "Bandingkan teks dengan tanda kutip", e: "Rumus yang benar: <b>=IF(D1=\"Laki-laki\",\"Putra\",\"Putri\")</b>" },
+  { q: "Tuliskan rumus IF: jika nilai di E1 kurang dari atau sama dengan 50, tampilkan \"Gagal\", jika tidak \"Berhasil\".", a: ["=if(e1<=50,\"gagal\",\"berhasil\")", "=if(e1<=50,'gagal','berhasil')"], hint: "Gunakan operator <=", e: "Rumus yang benar: <b>=IF(E1<=50,\"Gagal\",\"Berhasil\")</b>" },
+  { q: "Tuliskan rumus IF: jika nilai di A2 tidak sama dengan \"Hadir\", tampilkan \"Tidak Hadir\", jika tidak \"Hadir\".", a: ["=if(a2<>\"hadir\",\"tidak hadir\",\"hadir\")", "=if(a2<>'hadir','tidak hadir','hadir')"], hint: "Operator tidak sama dengan: <>", e: "Rumus yang benar: <b>=IF(A2<>\"Hadir\",\"Tidak Hadir\",\"Hadir\")</b>" },
+  { q: "Tuliskan rumus IF: jika nilai di B2 lebih besar dari 90, tampilkan \"Sangat Baik\", jika tidak \"Baik\".", a: ["=if(b2>90,\"sangat baik\",\"baik\")", "=if(b2>90,'sangat baik','baik')"], hint: "Gunakan operator >", e: "Rumus yang benar: <b>=IF(B2>90,\"Sangat Baik\",\"Baik\")</b>" },
+
+  // ===== COUNTIF =====
+  { q: "Tuliskan rumus COUNTIF: hitung berapa banyak siswa di A1:A20 yang nilainya LEBIH DARI 75.", a: ["=countif(a1:a20,\">75\")"], hint: "Gunakan COUNTIF dengan kriteria \">75\"", e: "Rumus yang benar: <b>=COUNTIF(A1:A20,\">75\")</b>" },
+  { q: "Tuliskan rumus COUNTIF: hitung berapa banyak sel di B1:B15 yang berisi kata \"Lulus\".", a: ["=countif(b1:b15,\"lulus\")", "=countif(b1:b15,'lulus')"], hint: "COUNTIF dengan kriteria teks", e: "Rumus yang benar: <b>=COUNTIF(B1:B15,\"Lulus\")</b>" },
+  { q: "Tuliskan rumus COUNTIF: hitung berapa banyak sel di C1:C20 yang nilainya KURANG DARI 60.", a: ["=countif(c1:c20,\"<60\")"], hint: "COUNTIF dengan kriteria \"<60\"", e: "Rumus yang benar: <b>=COUNTIF(C1:C20,\"<60\")</b>" },
+  { q: "Tuliskan rumus COUNTIF: hitung jumlah siswa laki-laki di kolom B (B1:B30).", a: ["=countif(b1:b30,\"laki-laki\")", "=countif(b1:b30,'laki-laki')"], hint: "COUNTIF dengan kriteria teks", e: "Rumus yang benar: <b>=COUNTIF(B1:B30,\"Laki-laki\")</b>" },
+  { q: "Tuliskan rumus COUNTIF: hitung jumlah sel di A1:A100 yang bernilai LEBIH DARI ATAU SAMA DENGAN 80.", a: ["=countif(a1:a100,\">=80\")"], hint: "COUNTIF dengan kriteria \">=80\"", e: "Rumus yang benar: <b>=COUNTIF(A1:A100,\">=80\")</b>" },
+  { q: "Tuliskan rumus COUNTIF: hitung jumlah sel di D1:D50 yang nilainya SAMA DENGAN 100.", a: ["=countif(d1:d50,100)", "=countif(d1:d50,\"100\")", "=countif(d1:d50,\"=100\")"], hint: "COUNTIF dengan kriteria angka", e: "Rumus yang benar: <b>=COUNTIF(D1:D50,100)</b>" },
+  { q: "Tuliskan rumus COUNTIF: hitung jumlah sel di E1:E40 yang nilainya TIDAK SAMA DENGAN \"Tidak Lulus\".", a: ["=countif(e1:e40,\"<>tidak lulus\")", "=countif(e1:e40,'<>tidak lulus')"], hint: "Gunakan operator <> untuk tidak sama dengan", e: "Rumus yang benar: <b>=COUNTIF(E1:E40,\"<>Tidak Lulus\")</b>" },
+
+  // ===== SUMIF =====
+  { q: "Tuliskan rumus SUMIF: jumlahkan nilai di B1:B10 HANYA jika nilai di A1:A10 sama dengan \"Laki-laki\".", a: ["=sumif(a1:a10,\"laki-laki\",b1:b10)", "=sumif(a1:a10,'laki-laki',b1:b10)"], hint: "Format: =SUMIF(range_kriteria, kriteria, range_jumlah)", e: "Rumus yang benar: <b>=SUMIF(A1:A10,\"Laki-laki\",B1:B10)</b>" },
+  { q: "Tuliskan rumus SUMIF: jumlahkan nilai di C1:C10 HANYA jika nilainya lebih dari 80.", a: ["=sumif(c1:c10,\">80\")", "=sumif(c1:c10,\">80\",c1:c10)"], hint: "SUMIF bisa 2 argumen jika range kriteria = range jumlah", e: "Rumus yang benar: <b>=SUMIF(C1:C10,\">80\")</b>" },
+  { q: "Tuliskan rumus SUMIF: jumlahkan nilai di B1:B10 HANYA jika nilai di A1:A10 lebih dari atau sama dengan 70.", a: ["=sumif(a1:a10,\">=70\",b1:b10)"], hint: "SUMIF dengan kriteria \">=70\"", e: "Rumus yang benar: <b>=SUMIF(A1:A10,\">=70\",B1:B10)</b>" },
+  { q: "Tuliskan rumus SUMIF: jumlahkan nilai di D1:D20 HANYA jika nilai di C1:C20 sama dengan \"Perempuan\".", a: ["=sumif(c1:c20,\"perempuan\",d1:d20)", "=sumif(c1:c20,'perempuan',d1:d20)"], hint: "SUMIF dengan kriteria teks", e: "Rumus yang benar: <b>=SUMIF(C1:C20,\"Perempuan\",D1:D20)</b>" },
+  { q: "Tuliskan rumus SUMIF: jumlahkan nilai di B1:B15 HANYA jika nilai di A1:A15 KURANG DARI 60.", a: ["=sumif(a1:a15,\"<60\",b1:b15)"], hint: "SUMIF dengan kriteria \"<60\"", e: "Rumus yang benar: <b>=SUMIF(A1:A15,\"<60\",B1:B15)</b>" },
+  { q: "Tuliskan rumus SUMIF: jumlahkan nilai di E1:E30 HANYA jika nilai di D1:D30 sama dengan 100.", a: ["=sumif(d1:d30,100,e1:e30)", "=sumif(d1:d30,\"100\",e1:e30)"], hint: "SUMIF dengan kriteria angka", e: "Rumus yang benar: <b>=SUMIF(D1:D30,100,E1:E30)</b>" }
+];
+
+// ========== VARIABEL GLOBAL ==========
+let soalAcak = [];
+let jawabanUser = [];
+let currentIndex = 0;
+let namaSiswa = "";
+let absenSiswa = "";
+let kelasSiswa = "";
+let sudahKirim = false;
+
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbziX39MW-5bH9K9ro1U36alertVK0d2xALiVYeeiKPo2AAdLix49pees7RNl8uyvl6t/exec";
+
+// ========== NORMALISASI & CEK JAWABAN ==========
+function normalisasi(str) {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .replace(/\s+/g, "")
+    .replace(/;/g, ",")
+    .replace(/'/g, "\"")
+    .replace(/[“”]/g, "\"")
+    .trim();
+}
+
+function cekJawaban(userInput, jawabanBenar) {
+  const userNorm = normalisasi(userInput);
+  if (!userNorm) return false;
+  return jawabanBenar.some(jb => normalisasi(jb) === userNorm);
+}
+
+// ========== FUNGSI UTAMA ==========
+function startQuiz() {
+  const elNama = document.getElementById('input-name');
+  const elAbsen = document.getElementById('input-absen');
+  const elKelas = document.getElementById('input-class');
+
+  namaSiswa = elNama ? elNama.value.trim() : "";
+  absenSiswa = elAbsen ? elAbsen.value.trim() : "";
+  kelasSiswa = elKelas ? elKelas.value.trim() : "";
+
+  if (!namaSiswa || !kelasSiswa || !absenSiswa) {
+    alert("Isi nama, absen, dan kelas dulu ya!");
+    return;
+  }
+
+  document.getElementById('info-nama').textContent = namaSiswa;
+  document.getElementById('info-kelas').textContent = kelasSiswa;
+  document.getElementById('info-absen').textContent = absenSiswa;
+
+  soalAcak = [...BANK_SOAL].sort(() => Math.random() - 0.5);
+  jawabanUser = new Array(soalAcak.length).fill(null);
+  currentIndex = 0;
+  sudahKirim = false;
+
+  document.getElementById('screen-start').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+
+  tampilkanSoal();
+}
+
+function tampilkanSoal() {
+  const soal = soalAcak[currentIndex];
+  document.getElementById('q-current').textContent = currentIndex + 1;
+  document.getElementById('q-num').textContent = "Soal " + (currentIndex + 1);
+  document.getElementById('q-text').textContent = soal.q;
+  document.getElementById('q-hint').textContent = "💡 Petunjuk: " + soal.hint;
+  document.getElementById('progress').style.width = ((currentIndex) / soalAcak.length * 100) + "%";
+
+  const input = document.getElementById('answer-input');
+  input.value = "";
+  input.disabled = false;
+  input.focus();
+
+  input.onkeydown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitJawaban();
+    }
+  };
+}
+
+function submitJawaban() {
+  const input = document.getElementById('answer-input');
+  const jawaban = input.value.trim();
+  if (!jawaban) {
+    alert("Tulis dulu rumusmu ya! Kalau tidak tahu, klik 'Lewati Soal'.");
+    return;
+  }
+  jawabanUser[currentIndex] = jawaban;
+  lanjutSoal();
+}
+
+function lewatiSoal() {
+  jawabanUser[currentIndex] = null;
+  lanjutSoal();
+}
+
+function lanjutSoal() {
+  document.getElementById('answer-input').disabled = true;
+  setTimeout(() => {
+    currentIndex++;
+    if (currentIndex < soalAcak.length) {
+      tampilkanSoal();
+    } else {
+      selesaikanKuis();
+    }
+  }, 200);
+}
+
+function selesaikanKuis() {
+  let benar = 0;
+  soalAcak.forEach((soal, i) => {
+    if (cekJawaban(jawabanUser[i] || "", soal.a)) benar++;
+  });
+  const nilai = Math.round((benar / soalAcak.length) * 100);
+
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-result').classList.add('active');
+
+  const circle = document.getElementById('score-circle');
+  circle.textContent = nilai;
+  circle.className = "score-circle";
+  if (nilai >= 90) circle.classList.add('score-excellent');
+  else if (nilai >= 75) circle.classList.add('score-good');
+  else if (nilai >= 60) circle.classList.add('score-fair');
+  else circle.classList.add('score-poor');
+
+  const summaryBox = document.getElementById('summary-box');
+  summaryBox.innerHTML = `
+    <div class="summary-item"><strong>${benar}</strong>Benar</div>
+    <div class="summary-item"><strong>${soalAcak.length - benar}</strong>Salah</div>
+    <div class="summary-item"><strong>${soalAcak.length}</strong>Total Soal</div>
+  `;
+
+  let feedback = "";
+  if (nilai >= 90) feedback = "🌟 <b>Luar biasa!</b> Kamu sangat menguasai rumus IF, COUNTIF, SUMIF! Terus pertahankan!";
+  else if (nilai >= 75) feedback = "👏 <b>Bagus sekali!</b> Pemahamanmu sudah baik. Sedikit latihan lagi dan kamu bisa jadi yang terbaik!";
+  else if (nilai >= 60) feedback = "💪 <b>Sudah cukup baik!</b> Jangan menyerah, pelajari kembali bagian yang salah dan coba lagi!";
+  else feedback = "🔥 <b>Jangan patah semangat!</b> Belajar itu proses. Baca pembahasan di bawah, ulangi materi, dan coba lagi!";
+  document.getElementById('feedback-text').innerHTML = feedback;
+
+  const reviewArea = document.getElementById('review-area');
+  reviewArea.innerHTML = "";
+  soalAcak.forEach((soal, i) => {
+    const userJawab = jawabanUser[i];
+    const isCorrect = cekJawaban(userJawab || "", soal.a);
+    const isEmpty = !userJawab;
+
+    const div = document.createElement('div');
+    div.className = "review-item " + (isCorrect ? "correct" : "wrong");
+
+    const badge = isCorrect
+      ? `<span class="review-badge correct">✅ BENAR</span>`
+      : `<span class="review-badge wrong">❌ SALAH</span>`;
+
+    const userAnsHtml = isEmpty
+      ? `<span class="review-answer empty-ans">(tidak dijawab)</span>`
+      : `<span class="review-answer ${isCorrect?'correct-ans':'wrong-ans'}">${escapeHtml(userJawab)}</span>`;
+
+    const keyHtml = `<span class="review-answer correct-ans">${escapeHtml(soal.a[0])}</span>`;
+
+    div.innerHTML = `
+      ${badge}
+      <div class="review-q">${i+1}. ${soal.q}</div>
+      <div class="review-row">
+        <span class="review-label">Jawabanmu:</span>
+        ${userAnsHtml}
+      </div>
+      ${!isCorrect ? `<div class="review-row"><span class="review-label">Kunci jawaban:</span>${keyHtml}</div>` : ''}
+      <div class="review-explanation">💡 ${soal.e}</div>
+    `;
+    reviewArea.appendChild(div);
+  });
+
+  kirimKeSheet(benar, nilai);
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// ========== KIRIM KE GOOGLE SHEETS ==========
+function kirimKeSheet(benar, nilai) {
+  const statusEl = document.getElementById('send-status');
+  statusEl.style.display = 'block';
+
+  if (sudahKirim) {
+    statusEl.className = 'send-status success';
+    statusEl.textContent = '✅ Nilai sudah dikirim sebelumnya.';
+    return;
+  }
+  sudahKirim = true;
+
+  if (!WEB_APP_URL || WEB_APP_URL.trim() === "" || WEB_APP_URL === "https://script.google.com/macros/s/AKfycbziX39MW-5bH9K9ro1U36alertVK0d2xALiVYeeiKPo2AAdLix49pees7RNl8uyvl6t/exec") {
+    statusEl.className = 'send-status error';
+    statusEl.textContent = '⚠️ URL Google Apps Script belum diisi.';
+    return;
+  }
+
+  statusEl.className = 'send-status sending';
+  statusEl.textContent = '⏳ Mengirim nilai ke Google Sheets...';
+
+  try {
+    const payload = {
+      nama: namaSiswa,
+      absen: absenSiswa,
+      kelas: kelasSiswa,
+      nilai: nilai,
+      benar: benar,
+      total: soalAcak.length
+    };
+
+    const form = document.getElementById('google-form');
+    form.action = WEB_APP_URL;
+    form.innerHTML = '';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'postData';
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+
+    form.submit();
+
+    statusEl.className = 'send-status success';
+    statusEl.textContent = '✅ Nilai berhasil dikirim ke Google Sheets!';
+  } catch (err) {
+    statusEl.className = 'send-status error';
+    statusEl.textContent = '❌ Gagal mengirim: ' + err.message;
+  }
+}
+</script>
+</body>
+</html>
