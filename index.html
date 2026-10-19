@@ -332,7 +332,7 @@ function kirimKeSheet(benar, nilai) {
   sudahKirim = true;
 
   // ✅ Cek hanya placeholder
-  if (!WEB_APP_URL || WEB_APP_URL.trim() === "" || WEB_APP_URL === "PASTE_URL_EXEC_DI_SINI") {
+  if (!WEB_APP_URL || WEB_APP_URL.trim() === "" || WEB_APP_URL === "https://script.google.com/macros/s/AKfycbziX39MW-5bH9K9ro1U36alertVK0d2xALiVYeeiKPo2AAdLix49pees7RNl8uyvl6t/exec") {
     statusEl.className = 'send-status error';
     statusEl.textContent = '⚠️ URL Apps Script belum diisi.';
     return;
